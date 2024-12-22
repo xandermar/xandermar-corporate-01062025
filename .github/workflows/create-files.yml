@@ -24,15 +24,15 @@ jobs:
       - name: Generate HTML files
         run: |
           # Create the docroot directory if it doesn't exist
-          mkdir -p docroot
+          # mkdir -p docroot
           
           # Read the articles.json and create HTML files
           cat articles.json | jq -c '.[]' | while read entity; do
             path=$(echo "$entity" | jq -r '.path')
             html=$(echo "$entity" | jq -r '.html')
 
-            # Replace path slashes with dashes and create the HTML file in docroot
-            file_name="docroot/$(echo "$path" | sed 's/\//-/g').html"
+            # Replace path slashes with dashes and create the HTML file in docs
+            file_name="docs/$(echo "$path" | sed 's/\//-/g').html"
 
             # Write the HTML content to the file
             echo "$html" > "$file_name"
@@ -44,7 +44,7 @@ jobs:
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add docroot/*
+          git add docs/*
           git commit -m "Generate article HTML files"
           git push
 
