@@ -19,7 +19,7 @@ jobs:
       - name: Read JSON and generate HTML files
         run: |
           # Define JSON file
-          JSON_FILE="pages.json"
+          JSON_FILE="articles.json"
           
           # Create docroot directory
           mkdir -p docroot
