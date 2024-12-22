@@ -1,50 +1,50 @@
-name: Create Files from Articles
+name: Build Articles
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
-  create-files:
+  build:
     runs-on: ubuntu-latest
     steps:
-      # Checkout repository
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      # Set up Node.js (for reading and parsing the JSON file)
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      # Install jq for JSON parsing (if you need jq for additional operations)
-      - name: Install jq
-        run: sudo apt-get install jq
-
-      # Read articles.json and process each article
-      - name: Create files for each article
+      - name: Install dependencies
         run: |
-          # Read the articles.json file and parse it
-          ARTICLES=$(cat articles.json)
+          sudo apt-get install -y jq
 
-          # Loop through each article and create the files
-          for row in $(echo "$ARTICLES" | jq -r '.[] | @base64'); do
-            _jq() {
-              echo ${row} | base64 --decode | jq -r ${1}
-            }
+      - name: Download articles.json
+        run: |
+          curl -o articles.json https://raw.githubusercontent.com/xandermar/action-build/refs/heads/main/articles.json
 
-            # Get the article path and HTML content
-            path=$(_jq '.path')
-            html=$(_jq '.html')
+      - name: Generate HTML files
+        run: |
+          # Create the docroot directory if it doesn't exist
+          mkdir -p docroot
+          
+          # Read the articles.json and create HTML files
+          cat articles.json | jq -c '.[]' | while read entity; do
+            path=$(echo "$entity" | jq -r '.path')
+            html=$(echo "$entity" | jq -r '.html')
 
-            # Create the directories if necessary
-            mkdir -p "./output/$path"
+            # Replace path slashes with dashes and create the HTML file in docroot
+            file_name="docroot/$(echo "$path" | sed 's/\//-/g').html"
 
             # Write the HTML content to the file
-            echo "$html" > "./output/$path/index.html"
+            echo "$html" > "$file_name"
+
+            echo "Created: $file_name"
           done
-          
-          # Optionally, print the result for debugging purposes
-          echo "Files created in ./output"
+
+      - name: Commit generated files
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add docroot/*
+          git commit -m "Generate article HTML files"
+          git push
+
