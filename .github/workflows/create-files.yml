@@ -1,4 +1,4 @@
-name: Deploy HTML Files to GitHub Pages
+name: Generate HTML Pages for GitHub Pages
 
 on:
   push:
@@ -6,30 +6,46 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  generate_html:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Create HTML files from JSON
-      - name: Create HTML files from JSON
+      - name: Install jq
+        run: sudo apt-get install jq
+
+      - name: Read JSON and generate HTML files
         run: |
-          json_data=$(cat articles.json)
+          # Define JSON file
+          JSON_FILE="pages.json"
+          
+          # Create docroot directory
+          mkdir -p docroot
 
-          echo "$json_data" | jq -c '.[]' | while read -r obj; do
-            path=$(echo "$obj" | jq -r '.path')
-            html=$(echo "$obj" | jq -r '.html')
+          # Read each object in the JSON array
+          cat $JSON_FILE | jq -c '.[]' | while read item; do
+            # Extract path and html values from each object
+            PATH=$(echo $item | jq -r '.path')
+            HTML=$(echo $item | jq -r '.html')
 
-            mkdir -p "public/$(dirname "$path")"
-            echo "$html" > "public/$path"
+            # Create directory if it doesn't exist
+            DIR_NAME="docroot$(dirname $PATH)"
+            mkdir -p $DIR_NAME
+
+            # Write HTML content to the file
+            echo "$HTML" > "$DIR_NAME/index.html"
           done
 
-      # Step 3: Deploy to GitHub Pages
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Commit and push generated files
+        uses: EndBug/add-and-commit@v9
         with:
+          message: "Generate HTML files for GitHub Pages"
+          add: "docroot/*"
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          publish_dir: ./docroot
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: public
