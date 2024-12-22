@@ -1,4 +1,4 @@
-name: Generate HTML Pages for GitHub Pages
+name: Create Files from Articles
 
 on:
   push:
@@ -6,46 +6,45 @@ on:
       - main
 
 jobs:
-  generate_html:
+  create-files:
     runs-on: ubuntu-latest
-
     steps:
+      # Checkout repository
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
+      # Set up Node.js (for reading and parsing the JSON file)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # Install jq for JSON parsing (if you need jq for additional operations)
       - name: Install jq
         run: sudo apt-get install jq
 
-      - name: Read JSON and generate HTML files
+      # Read articles.json and process each article
+      - name: Create files for each article
         run: |
-          # Define JSON file
-          JSON_FILE="articles.json"
-          
-          # Create docroot directory
-          mkdir -p docroot
+          # Read the articles.json file and parse it
+          ARTICLES=$(cat articles.json)
 
-          # Read each object in the JSON array
-          cat $JSON_FILE | jq -c '.[]' | while read item; do
-            # Extract path and html values from each object
-            PATH=$(echo $item | jq -r '.path')
-            HTML=$(echo $item | jq -r '.html')
+          # Loop through each article and create the files
+          for row in $(echo "$ARTICLES" | jq -r '.[] | @base64'); do
+            _jq() {
+              echo ${row} | base64 --decode | jq -r ${1}
+            }
 
-            # Create directory if it doesn't exist
-            DIR_NAME="docroot$(dirname $PATH)"
-            mkdir -p $DIR_NAME
+            # Get the article path and HTML content
+            path=$(_jq '.path')
+            html=$(_jq '.html')
 
-            # Write HTML content to the file
-            echo "$HTML" > "$DIR_NAME/index.html"
+            # Create the directories if necessary
+            mkdir -p "./output/$path"
+
+            # Write the HTML content to the file
+            echo "$html" > "./output/$path/index.html"
           done
-
-      - name: Commit and push generated files
-        uses: EndBug/add-and-commit@v9
-        with:
-          message: "Generate HTML files for GitHub Pages"
-          add: "docroot/*"
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          publish_dir: ./docroot
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+          # Optionally, print the result for debugging purposes
+          echo "Files created in ./output"
