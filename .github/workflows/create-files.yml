@@ -1,4 +1,4 @@
-name: Create HTML Files
+name: Deploy HTML Files to GitHub Pages
 
 on:
   push:
@@ -6,16 +6,16 @@ on:
       - main
 
 jobs:
-  create-files:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
+      # Step 1: Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Read and process JSON file
-      - name: Create files from JSON
+      # Step 2: Create files from JSON
+      - name: Create HTML files from JSON
         run: |
           # Read the JSON file
           json_data=$(cat articles.json)
@@ -25,13 +25,16 @@ jobs:
             path=$(echo "$obj" | jq -r '.path')
             html=$(echo "$obj" | jq -r '.html')
 
-            # Ensure the directory exists
-            mkdir -p "$(dirname "$path")"
+            # Ensure the directory exists under 'public' for GitHub Pages
+            mkdir -p "public/$(dirname "$path")"
 
             # Write the HTML content to the file
-            echo "$html" > "$path"
+            echo "$html" > "public/$path"
           done
 
-      # Verify the files
-      - name: List created files
-        run: ls -R article
+      # Step 3: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: public
