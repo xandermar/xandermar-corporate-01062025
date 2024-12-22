@@ -14,21 +14,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Create files from JSON
+      # Step 2: Create HTML files from JSON
       - name: Create HTML files from JSON
         run: |
-          # Read the JSON file
           json_data=$(cat articles.json)
 
-          # Parse JSON and loop through objects
           echo "$json_data" | jq -c '.[]' | while read -r obj; do
             path=$(echo "$obj" | jq -r '.path')
             html=$(echo "$obj" | jq -r '.html')
 
-            # Ensure the directory exists under 'public' for GitHub Pages
             mkdir -p "public/$(dirname "$path")"
-
-            # Write the HTML content to the file
             echo "$html" > "public/$path"
           done
 
