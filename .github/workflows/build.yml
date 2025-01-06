@@ -21,11 +21,6 @@ jobs:
         run: |
           curl -o content.json https://raw.githubusercontent.com/xandermar/action-build/refs/heads/main/content.json
 
-      - name: List files in docs before cleanup - Check 1
-        run: |
-          echo "Before Cleanup:"
-          ls -R docs
-
       - name: Remove all files in 'docs' directory
         run: |
           git rm -rf docs/*
@@ -33,6 +28,11 @@ jobs:
       - name: Create 'docs' directory
         run: |
           mkdir -p docs
+
+      - name: List files in docs before cleanup - Check 1
+        run: |
+          echo "Before Cleanup:"
+          ls -R docs
 
       - name: Create 'CNAME' file in 'docs' directory
         run: |
