@@ -21,6 +21,10 @@ jobs:
         run: |
           curl -o articles.json https://raw.githubusercontent.com/xandermar/action-build/refs/heads/main/articles.json
 
+      - name: Remove outdated files
+        run: |
+          find docs -type f ! -name 'CNAME' -delete
+      
       - name: Generate HTML files
         run: |
           # Create the docroot directory if it doesn't exist
