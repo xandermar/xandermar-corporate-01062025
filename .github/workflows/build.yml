@@ -1,4 +1,4 @@
-name: Build Articles
+name: Build Static HTML
 
 on:
   push:
