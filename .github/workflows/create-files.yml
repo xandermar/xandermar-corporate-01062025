@@ -39,6 +39,9 @@ jobs:
             # file_name="docs/$(echo "$path" | sed 's/\//-/g').html"
             file_name="docs/$path"
 
+            mkdir -p "$(dirname $file_name)"
+
+
             # Write the HTML content to the file
             echo "$html" > "$file_name"
 
