@@ -24,7 +24,7 @@ jobs:
       - name: Remove outdated files
         run: |
 	  find docs -mindepth 1 ! -name "CNAME" -exec rm -rf {} +
-      
+
       - name: Generate HTML files
         run: |
           # Create the docroot directory if it doesn't exist
