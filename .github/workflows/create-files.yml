@@ -1,0 +1,63 @@
+name: Build Articles
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y jq
+
+      - name: Download articles.json
+        run: |
+          curl -o articles.json https://raw.githubusercontent.com/xandermar/action-build/refs/heads/main/articles.json
+
+      - name: List files in docs before cleanup
+        run: |
+          echo "Before Cleanup:"
+          ls -R docs
+
+      - name: Remove all files except CNAME in docs directory
+        run: |
+          find docs -mindepth 1 ! -name 'CNAME' -exec rm -rf {} +
+
+      - name: Generate HTML files
+        run: |
+          # Create the docroot directory if it doesn't exist
+          # mkdir -p docroot
+
+          # Read the articles.json and create HTML files
+          cat articles.json | jq -c '.[]' | while read entity; do
+            path=$(echo "$entity" | jq -r '.path')
+            html=$(echo "$entity" | jq -r '.html')
+
+            # Replace path slashes with dashes and create the HTML file in docs
+            # file_name="docs/$(echo "$path" | sed 's/\//-/g').html"
+            file_name="docs/$path"
+
+            mkdir -p "$(dirname $file_name)"
+
+
+            # Write the HTML content to the file
+            echo "$html" > "$file_name"
+
+            echo "Created: $file_name"
+          done
+
+      - name: Commit generated files
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add docs/*
+          git commit -m "Generate article HTML files"
+          git push
+
