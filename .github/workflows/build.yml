@@ -21,6 +21,11 @@ jobs:
         run: |
           curl -o articles.json https://raw.githubusercontent.com/xandermar/action-build/refs/heads/main/articles.json
 
+      - name: List files in docs before cleanup
+        run: |
+          echo "Before Cleanup:"
+          ls -R docs
+
       - name: Remove all files except CNAME in docs directory
         run: |
           find docs -mindepth 1 ! -name 'CNAME' -exec rm -rf {} +
