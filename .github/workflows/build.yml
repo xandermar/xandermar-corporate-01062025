@@ -19,7 +19,7 @@ jobs:
 
       - name: Download articles.json
         run: |
-          curl -o articles.json https://raw.githubusercontent.com/xandermar/action-build/refs/heads/main/articles.json
+          curl -o content.json https://raw.githubusercontent.com/xandermar/action-build/refs/heads/main/content.json
 
       - name: List files in docs before cleanup - Check 1
         run: |
