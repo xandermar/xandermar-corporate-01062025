@@ -21,20 +21,26 @@ jobs:
         run: |
           curl -o articles.json https://raw.githubusercontent.com/xandermar/action-build/refs/heads/main/articles.json
 
-      - name: List files in docs before cleanup
+      - name: List files in docs before cleanup - Check 1
         run: |
           echo "Before Cleanup:"
           ls -R docs
 
-      - name: Remove all files except CNAME in docs directory
+      - name: Remove all files in 'docs' directory
         run: |
-          find docs -mindepth 1 ! -name 'CNAME' -exec rm -rf {} +
+          rm -rf docs/*
+
+      - name: Create 'CNAME' file in 'docs' directory
+        run: |
+          echo "static.xandermar.com" > docs/CNAME
+
+      - name: List files in docs before cleanup - Check 2
+        run: |
+          echo "Before Cleanup:"
+          ls -R docs
 
       - name: Generate HTML files
         run: |
-          # Create the docroot directory if it doesn't exist
-          # mkdir -p docroot
-
           # Read the articles.json and create HTML files
           cat articles.json | jq -c '.[]' | while read entity; do
             path=$(echo "$entity" | jq -r '.path')
