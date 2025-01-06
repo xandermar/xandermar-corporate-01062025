@@ -47,6 +47,9 @@ jobs:
 
       - name: Generate HTML files
         run: |
+          # Copy front.html to root dir
+          cp front.html docs/index.html
+          
           # Read the content.json and create HTML files
           cat content.json | jq -c '.[]' | while read entity; do
             path=$(echo "$entity" | jq -r '.path')
