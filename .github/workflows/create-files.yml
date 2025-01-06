@@ -23,7 +23,8 @@ jobs:
 
       - name: Remove outdated files
         run: |
-          find docs -type f ! -name 'CNAME' -delete
+          # find docs -type f ! -name 'CNAME' -delete
+	  find docs -mindepth 1 ! -name "CNAME" -exec rm -rf {} +
       
       - name: Generate HTML files
         run: |
