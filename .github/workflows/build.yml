@@ -24,7 +24,7 @@ jobs:
       - name: Remove all files in 'docs' directory
         run: |
           if [ -d "docs" ]; then
-            git rm -f docs/*
+            git rm -fr docs/*
           fi
 
       - name: Create 'docs' directory
