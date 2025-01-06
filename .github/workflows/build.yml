@@ -30,9 +30,12 @@ jobs:
         run: |
           git rm -rf docs/*
 
+      - name: Create 'docs' directory
+        run: |
+          mkdir -p docs
+
       - name: Create 'CNAME' file in 'docs' directory
         run: |
-          touch docs/CNAME
           echo "static.xandermar.com" > docs/CNAME
 
       - name: List files in docs before cleanup - Check 2
