@@ -28,7 +28,7 @@ jobs:
 
       - name: Remove all files in 'docs' directory
         run: |
-          rm -rf docs/*
+          git rm -rf docs/*
 
       - name: Create 'CNAME' file in 'docs' directory
         run: |
