@@ -17,7 +17,7 @@ jobs:
         run: |
           sudo apt-get install -y jq
 
-      - name: Download articles.json
+      - name: Download content.json
         run: |
           curl -o content.json https://raw.githubusercontent.com/xandermar/action-build/refs/heads/main/content.json
 
@@ -45,8 +45,8 @@ jobs:
 
       - name: Generate HTML files
         run: |
-          # Read the articles.json and create HTML files
-          cat articles.json | jq -c '.[]' | while read entity; do
+          # Read the content.json and create HTML files
+          cat content.json | jq -c '.[]' | while read entity; do
             path=$(echo "$entity" | jq -r '.path')
             html=$(echo "$entity" | jq -r '.html')
 
