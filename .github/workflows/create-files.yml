@@ -32,7 +32,8 @@ jobs:
             html=$(echo "$entity" | jq -r '.html')
 
             # Replace path slashes with dashes and create the HTML file in docs
-            file_name="docs/$(echo "$path/" | sed 's/\//-/g').html"
+            # file_name="docs/$(echo "$path" | sed 's/\//-/g').html"
+            file_name="docs/$path"
 
             # Write the HTML content to the file
             echo "$html" > "$file_name"
