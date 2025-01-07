@@ -77,7 +77,8 @@ jobs:
         run: |
           # Read the content of menu.html
           MENU_CONTENT=$(<"menu.html")
-          sed -i.bak "s|\[menu\]|$MENU_CONTENT|g" "front.html"
+          ESCAPED_MENU_CONTENT=$(printf '%s' "$MENU_CONTENT" | sed 's/[&/\]/\\&/g')
+          sed -i.bak "s|\[menu\]|$ESCAPED_MENU_CONTENT|g" "front.html"
 
       - name: Commit generated files
         run: |
