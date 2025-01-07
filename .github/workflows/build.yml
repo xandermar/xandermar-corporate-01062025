@@ -15,7 +15,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt update && apt-get install -y jq curl git
+          sudo apt-get install -y jq
 
       - name: Download content.json
         run: |
@@ -49,7 +49,7 @@ jobs:
         run: |
           # Copy front.html to root dir
           cp front.html docs/index.html
-          
+
           # Read the content.json and create HTML files
           cat content.json | jq -c '.[]' | while read entity; do
             path=$(echo "$entity" | jq -r '.path')
