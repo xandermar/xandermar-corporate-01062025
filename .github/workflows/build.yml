@@ -68,6 +68,11 @@ jobs:
             echo "Created: $file_name"
           done
 
+      - name: Build CSS
+        run: |
+          # Copy the CSS file to the docs directory
+          sass main.scss docs/main.css
+
       - name: Commit generated files
         run: |
           # Check if there are any changes
