@@ -73,6 +73,12 @@ jobs:
           # Copy the CSS file to the docs directory
           sass main.scss docs/main.css
 
+      - name: Build Placeholders
+        run: |
+          # Read the content of menu.html
+          MENU_CONTENT=$(<"$MENU_FILE")
+          sed -i.bak "s|\[menu\]|$MENU_CONTENT|g" "front.html"
+
       - name: Commit generated files
         run: |
           # Check if there are any changes
