@@ -76,7 +76,7 @@ jobs:
       - name: Build Placeholders
         run: |
           # Read the content of menu.html
-          MENU_CONTENT=$(<"$MENU_FILE")
+          MENU_CONTENT=$(<"menu.html")
           sed -i.bak "s|\[menu\]|$MENU_CONTENT|g" "front.html"
 
       - name: Commit generated files
